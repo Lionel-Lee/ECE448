@@ -34,31 +34,34 @@ def search(maze, searchMethod):
 def bfs(maze):
     # TODO: Write your code here
     # return path, num_states_explored
-    path = []
+    path_queue = []
     visited = set()
-    path.append([maze.getStart()])
-    while(path):
-        now_path = path.pop(0)
+    path_queue.append([maze.getStart()])
+    while(path_queue):
+        now_path = path_queue.pop(0)
         now_point = now_path[-1]
         now_row, now_col = now_point[0], now_point[1]
         if (now_point in visited):
             continue
         if (maze.isObjective(now_row, now_col)):
             # print(now_path)
-            return now_path, len(visited)
+            visited.add(now_point)
+            shortest_path = now_path
+            break 
         for point in maze.getNeighbors(now_row, now_col):
             if (point not in visited):
-                path.append(now_path + [point])
+                path_queue.append(now_path + [point])
                 visited.add(now_point)
-    return [], 0
+    return shortest_path, len(visited)
 
 
 def dfs(maze):
     # TODO: Write your code here
     # return path, num_states_explored
 
+    #improved the DFS algorithm to allow better performance
     shortest_path = []
-    shortest_path_len = 9999
+    shortest_path_len = 9999        
     stack = []
     visited = set()
     init_path = [maze.getStart()]
