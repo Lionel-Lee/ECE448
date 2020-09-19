@@ -34,6 +34,22 @@ def search(maze, searchMethod):
 def bfs(maze):
     # TODO: Write your code here
     # return path, num_states_explored
+    path = []
+    visited = set()
+    path.append([maze.getStart()])
+    while(path):
+        now_path = path.pop(0)
+        now_point = now_path[-1]
+        now_row, now_col = now_point[0], now_point[1]
+        if (now_point in visited):
+            continue
+        if (maze.isObjective(now_row, now_col)):
+            # print(now_path)
+            return now_path, len(visited)
+        for point in maze.getNeighbors(now_row, now_col):
+            if (point not in visited):
+                path.append(now_path + [point])
+                visited.add(now_point)
     return [], 0
 
 
