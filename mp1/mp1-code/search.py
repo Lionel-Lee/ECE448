@@ -14,7 +14,9 @@ within this file -- the unrevised staff files will be used for all other
 files and classes when code is run, so be careful to not modify anything else.
 """
 
-
+#import mp1
+import queue as Q
+from maze import Maze
 # Search should return the path and the number of states explored.
 # The path should be a list of tuples in the form (row, col) that correspond
 # to the positions of the path taken by your search algorithm.
@@ -89,7 +91,7 @@ def greedy(maze):
     objectives = maze.getObjectives()
     Que = Q.PriorityQueue()
     Que.put([get_man_dis(start_point, objectives), start_point])
-    visited = []
+    visited = set()
     num_states_explored = 0 
     parent = {} 
     while Que:
@@ -131,4 +133,35 @@ def get_man_dis(p,objectives):
 def astar(maze):
     # TODO: Write your code here
     # return path, num_states_explored
-    return [], 0
+    # get start point and objectives from maze
+    start_point = maze.getStart()
+    objectives = maze.getObjectives()
+    Cost = {}
+    Que = Q.PriorityQueue()
+    Cost[start_point] = 0
+    Que.put([get_man_dis(start_point, objectives)+Cost[start_point], start_point])
+    visited = set()
+    visited.add(start_point)
+    num_states_explored = 0 
+    parent = {} 
+    while Que:
+        current_point = Que.get()[1]
+        visited.add(current_point)
+        num_states_explored +=1
+        #break condition
+        if maze.isObjective(current_point[0],current_point[1]):
+            dest = current_point
+            break
+        neighbors = maze.getNeighbors(current_point[0],current_point[1])
+        for each in neighbors:
+            if (each not in visited):
+                parent[each] = current_point
+                Cost[each]=Cost[current_point]+1
+                #push the neighbor to que
+                Que.put([get_man_dis(each, objectives)+Cost[each],each])
+            if (Cost[current_point]+1<Cost[each]):
+                parent[each] = current_point
+                Cost[each]=Cost[current_point]+1
+                visited.remove(each)
+                Que.put([get_man_dis(each, objectives)+Cost[each],each])
+    return get_path(dest, start_point, parent), num_states_explored
