@@ -62,8 +62,7 @@ def dfs(maze):
     # return path, num_states_explored
 
     #improved the DFS algorithm to allow better performance
-    shortest_path = []
-    shortest_path_len = 9999        
+    output_path = [] 
     stack = []
     visited = set()
     init_path = [maze.getStart()]
@@ -77,16 +76,12 @@ def dfs(maze):
             continue
         visited.add((x,y))
         if (maze.isObjective(x,y)):
-            if(cur_length < shortest_path_len):
-                shortest_path = path
-                shortest_path_len = cur_length
-            continue
-        if (cur_length >= shortest_path_len):
-            continue
+            output_path = path
+            break
         for neighbor in maze.getNeighbors(x, y):
             if neighbor not in visited:
                 stack.append(path + [neighbor])
-    return shortest_path, len(visited)
+    return output_path, len(visited)
 
 def greedy(maze):
     # TODO: Write your code here
