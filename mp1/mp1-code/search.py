@@ -91,7 +91,7 @@ def greedy(maze):
     objectives = maze.getObjectives()
     Que = Q.PriorityQueue()
     Que.put([get_man_dis(start_point, objectives), start_point])
-    visited = set()
+    visited = []
     num_states_explored = 0 
     parent = {} 
     while Que:
