@@ -156,7 +156,7 @@ def astar(maze):
             f_neighbor = (len(current_path)-1 + 1) + h_man_dis(neighbor,end_point)
             if (neighbor not in closed_list):
                 open_list.put((f_neighbor,current_path+[neighbor]))
-            elif (closed_list[neighbor] > f_neighbor):
-                closed_list[neighbor] = f_neighbor
-                open_list.put((f_neighbor,current_path+[neighbor]))
+            # elif (closed_list[neighbor] > f_neighbor):                  # not necessary for manhattan dist 
+            #     closed_list[neighbor] = f_neighbor
+            #     open_list.put((f_neighbor,current_path+[neighbor]))
     return [],0
