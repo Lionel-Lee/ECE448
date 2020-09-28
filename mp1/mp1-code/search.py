@@ -137,6 +137,18 @@ def astar(maze):
     # TODO: Write your code here
     # return path, num_states_explored
     # get start point and objectives from maze
+
+    if (1 == len(maze.getObjectives())):
+        return astar_single(maze)
+
+    return [],0
+
+
+
+def astar_single(maze):
+    # TODO: Write your code here
+    # return path, num_states_explored
+    # get start point and objectives from maze
     start_point = maze.getStart()
     end_point = maze.getObjectives()[0]  # one objective situation 
     closed_list = {}
