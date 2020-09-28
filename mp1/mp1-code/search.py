@@ -129,39 +129,34 @@ def get_man_dis(p,objectives):
             min_dis = man_dis
     return min_dis
 
+def h_man_dis(start,end):
+    return (abs(start[0] - end[0]) + abs(start[1] - end[1]))
+
 
 def astar(maze):
     # TODO: Write your code here
     # return path, num_states_explored
     # get start point and objectives from maze
     start_point = maze.getStart()
-    objectives = maze.getObjectives()
-    Cost = {}
-    Que = Q.PriorityQueue()
-    Cost[start_point] = 0
-    Que.put([get_man_dis(start_point, objectives)+Cost[start_point], start_point])
-    visited = set()
-    visited.add(start_point)
-    num_states_explored = 0 
-    parent = {} 
-    while Que:
-        current_point = Que.get()[1]
-        visited.add(current_point)
-        num_states_explored +=1
-        #break condition
-        if maze.isObjective(current_point[0],current_point[1]):
-            dest = current_point
-            break
-        neighbors = maze.getNeighbors(current_point[0],current_point[1])
-        for each in neighbors:
-            if (each not in visited):
-                parent[each] = current_point
-                Cost[each]=Cost[current_point]+1
-                #push the neighbor to que
-                Que.put([get_man_dis(each, objectives)+Cost[each],each])
-            if (Cost[current_point]+1<Cost[each]):
-                parent[each] = current_point
-                Cost[each]=Cost[current_point]+1
-                visited.remove(each)
-                Que.put([get_man_dis(each, objectives)+Cost[each],each])
-    return get_path(dest, start_point, parent), num_states_explored
+    end_point = maze.getObjectives()[0]  # one objective situation 
+    closed_list = {}
+    open_list = Q.PriorityQueue()
+
+    open_list.put((0+h_man_dis(start_point,end_point),[start_point]))
+
+    while open_list:
+        current_path = open_list.get()[1]
+        current_point = current_path[-1]
+        if (current_point in closed_list):
+            continue
+        closed_list[current_point] = (len(current_path)-1) + h_man_dis(current_point,end_point)   
+        if (current_point == end_point):
+            return current_path,len(closed_list)
+        for neighbor in maze.getNeighbors(current_point[0],current_point[1]):
+            f_neighbor = (len(current_path)-1 + 1) + h_man_dis(neighbor,end_point)
+            if (neighbor not in closed_list):
+                open_list.put((f_neighbor,current_path+[neighbor]))
+            elif (closed_list[neighbor] > f_neighbor):
+                closed_list[neighbor] = f_neighbor
+                open_list.put((f_neighbor,current_path+[neighbor]))
+    return [],0
