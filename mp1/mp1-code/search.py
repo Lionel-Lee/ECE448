@@ -17,6 +17,7 @@ files and classes when code is run, so be careful to not modify anything else.
 #import mp1
 import queue as Q
 from maze import Maze
+import sys
 # Search should return the path and the number of states explored.
 # The path should be a list of tuples in the form (row, col) that correspond
 # to the positions of the path taken by your search algorithm.
@@ -127,7 +128,7 @@ def get_man_dis(p,objectives):
         man_dis = abs(p[0] - each[0]) + abs(p[1] - each[1])
         if (man_dis < min_dis):
             min_dis = man_dis
-    return min_dis
+    return min_dis+len(p)-1
 
 def h_man_dis(start,end):
     return (abs(start[0] - end[0]) + abs(start[1] - end[1]))
@@ -140,9 +141,44 @@ def astar(maze):
 
     if (1 == len(maze.getObjectives())):
         return astar_single(maze)
+    
+    start_point = maze.getStart()
+    objectives= maze.getObjectives()
+    final_path=[start_point]
+    part_path=[]
+    length=0
+    state_explored=0
+    while (objectives):
+        
+        part_path,length,start_point= astar_mul(maze,start_point,objectives)
+        part_path.remove(part_path[0])
+        final_path+=part_path
+        state_explored += length
+        objectives.remove(start_point)
+    return final_path,state_explored
 
+
+def astar_mul(maze,start_point,objectives):
+    closed_list = {}
+    open_list = Q.PriorityQueue()
+    open_list.put((0+get_man_dis(start_point,objectives),[start_point]))
+    while open_list:
+        current_path = open_list.get()[1]
+        current_point = current_path[-1]
+
+        if (current_point in closed_list):
+            continue
+        closed_list[current_point] = (len(current_path)-1) + get_man_dis(current_point,objectives)   
+        if (current_point in objectives):
+            return current_path,len(closed_list),current_point
+        for neighbor in maze.getNeighbors(current_point[0],current_point[1]):
+            f_neighbor = (len(current_path)-1 + 1) + get_man_dis(neighbor,objectives)
+            if (neighbor not in closed_list):
+                open_list.put((f_neighbor,current_path+[neighbor]))
+            elif (closed_list[neighbor] > f_neighbor):                  # not necessary for manhattan dist 
+                closed_list[neighbor] = f_neighbor
+                open_list.put((f_neighbor,current_path+[neighbor]))
     return [],0
-
 
 
 def astar_single(maze):
@@ -153,7 +189,6 @@ def astar_single(maze):
     end_point = maze.getObjectives()[0]  # one objective situation 
     closed_list = {}
     open_list = Q.PriorityQueue()
-
     open_list.put((0+h_man_dis(start_point,end_point),[start_point]))
 
     while open_list:
@@ -172,3 +207,8 @@ def astar_single(maze):
                 closed_list[neighbor] = f_neighbor
                 open_list.put((f_neighbor,current_path+[neighbor]))
     return [],0
+
+
+
+
+
