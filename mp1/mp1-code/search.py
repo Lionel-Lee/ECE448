@@ -137,16 +137,18 @@ def astar(maze):
     start_point = maze.getStart()
     objectives = maze.getObjectives()
     Cost = {}
+    min_sofar={}
     Que = Q.PriorityQueue()
     Cost[start_point] = 0
-    Que.put([get_man_dis(start_point, objectives)+Cost[start_point], start_point])
-    visited = set()
-    visited.add(start_point)
+    Que.put([get_man_dis(start_point, objectives)+Cost[start_point],start_point,Cost[start_point]])
+    min_sofar[start_point]=0
+    closelist = set()
+    closelist.add(start_point)
     num_states_explored = 0 
     parent = {} 
     while Que:
         current_point = Que.get()[1]
-        visited.add(current_point)
+        closelist.add(current_point)
         num_states_explored +=1
         #break condition
         if maze.isObjective(current_point[0],current_point[1]):
@@ -154,14 +156,7 @@ def astar(maze):
             break
         neighbors = maze.getNeighbors(current_point[0],current_point[1])
         for each in neighbors:
-            if (each not in visited):
-                parent[each] = current_point
-                Cost[each]=Cost[current_point]+1
-                #push the neighbor to que
-                Que.put([get_man_dis(each, objectives)+Cost[each],each])
-            if (Cost[current_point]+1<Cost[each]):
-                parent[each] = current_point
-                Cost[each]=Cost[current_point]+1
-                visited.remove(each)
-                Que.put([get_man_dis(each, objectives)+Cost[each],each])
+            if (each not in closelist):
+                if (each in min_sofar):
+                    if ([get_man_dis(start_point, objectives)+])
     return get_path(dest, start_point, parent), num_states_explored
