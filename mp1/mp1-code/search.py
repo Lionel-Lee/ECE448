@@ -210,5 +210,3 @@ def astar_single(maze):
 
 
 
-
-
