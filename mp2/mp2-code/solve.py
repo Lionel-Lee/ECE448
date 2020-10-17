@@ -2,68 +2,50 @@
 import numpy as np
 
 def solve(board, pents):
-    """
-    This is the function you will implement. It will take in a numpy array of the board
-    as well as a list of n tiles in the form of numpy arrays. The solution returned
-    is of the form [(p1, (row1, col1))...(pn,  (rown, coln))]
-    where pi is a tile (may be rotated or flipped), and (rowi, coli) is 
-    the coordinate of the upper left corner of pi in the board (lowest row and column index 
-    that the tile covers).
-    
-    -Use np.flip and np.rot90 to manipulate pentominos.
-    
-    -You can assume there will always be a solution.
-    """
-
+    pents_num = len(pents)
     board = 1 - board           #swap 0 and 1, 0 for available place
     # result_list = []
     # # result_list = solve_helper(cur_board, pents, 0, result_list)[0]
     # return result_list
-    flat_board = board.ravel()
-    list_to_delete = np.where(flat_board == 1)
-    list_to_delete = [x + len(pents) for x in list_to_delete]
+    board_unavailble_pos = np.where(board.ravel())
+    for pos in board_unavailble_pos:
+        pos += pents_num 
 
-    matrix = []
-    info_matrix = []
-    for i in range(len(pents)):
-        all_pos_list, all_pos_info = pent_possible_place(board, pents[i])
-        for item in all_pos_list:
-            item = np.append(np.zeros(len(pents)), item)
-            item = np.delete(item, list_to_delete)
-            item[i] = 1
-            matrix.append(item)
-        info_matrix.extend(all_pos_info)
+    board_mat = []
+    pent_coord_mat = []
+    for i in range(pents_num):
+        board_list, pent_coord_list = pent_possible_place(board, pents[i])
+        for cur_board in board_list:
+            cur_board = np.append(np.zeros(pents_num), cur_board)
+            cur_board = np.delete(cur_board, board_unavailble_pos)
+            cur_board[i] = 1
+            board_mat.append(cur_board)
+        pent_coord_mat.extend(pent_coord_list)
 
-    # matrix is the big 2000 * 72 for exact cover algorithm X
-    matrix = np.array(matrix)
-    # print("matrix row numbers:", len(matrix))
+    board_mat = np.array(board_mat)
+    # print(board_mat.shape)
+    board_mat[board_mat > 0] = 1
+    solution_list = exact_cover(board_mat)
 
-    matrix[matrix > 0] = 1
-    result_list = exact_cover(matrix)
-
-    return_val = []
-    for i in result_list:
-        info = info_matrix[i]
-        # print(info)
-        return_val.append((info[0], (info[1], info[2])))
-    return return_val
+    solutions = []
+    for i in solution_list:
+        pent, coord = pent_coord_mat[i][0], (pent_coord_mat[i][1],pent_coord_mat[i][2])
+        solutions.append((pent, coord))
+    return solutions
 
 # def solve_helper(cur_board, pents, pent_idx, result_list):
 #     print(cur_board)
-
 #     if(pent_idx == len(pents)):
 #         return result_list, True
 #     pent = pents[pent_idx]
 #     for x in range(cur_board.shape[0]):
 #         for y in range(cur_board.shape[1]):
 #             coord = (x,y)
-
 #             # if  ((x==0 or cur_board[x-1][y] > 0) and \
 #             #     (y==0 or cur_board[x][y-1] > 0) and    \
 #             #     (x==cur_board.shape[0]-1 or cur_board[x+1][y] > 0) and \
 #             #     (y==cur_board.shape[1]-1 or cur_board[x][y+1] > 0)):
 #             #         return result_list, False
-
 #             for flip in range(2):
 #                 if(flip):
 #                     p = np.flip(pent, 1)
@@ -80,16 +62,8 @@ def solve(board, pents):
 #     return result_list, False
 
 # def add_pentomino(board, pent, coord, valid_pents=None):
-#     """
-#     Adds a pentomino pent to the board. The pentomino will be placed such that
-#     coord[0] is the lowest row index of the pent and coord[1] is the lowest 
-#     column index. 
-    
-#     check_pent will also check if the pentomino is part of the valid pentominos.
-#     """
 #     if ((coord[0] + pent.shape[0] - 1 >= board.shape[0]) or (coord[1] + pent.shape[1] - 1 >= board.shape[1])):
 #         return False
-
 #     for row in range(pent.shape[0]):
 #         for col in range(pent.shape[1]):
 #             if pent[row][col] != 0:
@@ -141,8 +115,8 @@ def pent_trans_repo(pent):          #generate repository of all the transformati
             result.append(p)
     return result
 
-def exact_cover(matrix):
-    return exact_cover_helper(matrix, [], list(range(matrix.shape[0])))
+def exact_cover(board_mat):           #The exact cover algorithm
+    return exact_cover_helper(board_mat, [], list(range(board_mat.shape[0])))
 
 def exact_cover_helper(A, partial, original_r):
     row, col = A.shape
