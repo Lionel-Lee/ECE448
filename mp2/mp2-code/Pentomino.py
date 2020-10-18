@@ -101,7 +101,7 @@ if __name__ == "__main__":
     We won't gaurantee which tests your code will be run on, however if it runs
     well on the pentomino set you should be fine. 
     """
-    board = instances.empty_chessboard
+    board = instances.board_6x10
     pents = instances.petnominos
     sol_list = solve(board, pents)
     if check_correctness(sol_list, board, pents):

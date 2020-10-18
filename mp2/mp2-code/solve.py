@@ -25,7 +25,7 @@ def solve(board, pents):
     board_mat = np.array(board_mat)
     # print(board_mat.shape)
     board_mat[board_mat > 0] = 1
-    solution_list = exact_cover(board_mat)
+    solution_list = pent_cover_solver(board_mat)
 
     solutions = []
     for i in solution_list:
@@ -115,41 +115,39 @@ def pent_trans_repo(pent):          #generate repository of all the transformati
             result.append(p)
     return result
 
-def exact_cover(board_mat):           #The exact cover algorithm
-    return exact_cover_helper(board_mat, [], list(range(board_mat.shape[0])))
+def pent_cover_solver(board_mat):           #The exact cover algorithm
+    row_num = board_mat.shape[0]
+    row_num_list = list(range(row_num))
+    cur_sol = []
+    return pent_cover_solver_helper(board_mat, cur_sol, row_num_list)
 
-def exact_cover_helper(A, partial, original_r):
-    row, col = A.shape
-    if col == 0:
-        return partial
-    else:
-        c = A.sum(axis=0).argmin()
-        if A.sum(axis=0)[c] == 0:
-            return None
-        partial_temp = partial
-        for r in range(row):
-            B = A
-            if B[r][c] != 1:
+def pent_cover_solver_helper(cur_board_mat, cur_solution, row_num_list):
+    height, width = cur_board_mat.shape
+    if not width:
+        return cur_solution
+    c = cur_board_mat.sum(axis=0).argmin()          #sum of columns
+    if cur_board_mat.sum(axis=0)[c] == 0:
+        return None                                 #no further solutions
+    for r in range(height):                         #go through all possible positions
+        if not cur_board_mat[r][c]:
+            continue
+        row_to_delete = []
+        col_to_delete = []
+        cur_solution.append(row_num_list[r])
+        next_board_mat = cur_board_mat
+        for j in range(width):
+            if not next_board_mat[r][j]:
                 continue
-            r_index = original_r[r]
-            partial_temp.append(r_index)
-            col_temp = []
-            row_temp = []
-            for j in range(col):
-                if B[r][j] != 1:
-                    continue
-                col_temp.append(j)
-                for i in range(row):
-                    if B[i][j] == 1:
-                        if i not in row_temp:
-                            row_temp.append(i)
-            # Delete each row i such that A[i,j] = 1
-            # then delete column j.
-            B = np.delete(B, row_temp, axis=0)
-            B = np.delete(B, col_temp, axis=1)
-            new_index = [x for x in list(range(row)) if x not in row_temp]
-            new_r = [original_r[x] for x in new_index]
-            answer = exact_cover_helper(B, partial_temp, new_r)
-            if answer != None:
-                return answer
-            partial_temp.remove(r_index)
+            col_to_delete.append(j)
+            for i in range(height):
+                if next_board_mat[i][j]:
+                    if i not in row_to_delete:
+                        row_to_delete.append(i)
+        next_board_mat = np.delete(next_board_mat, col_to_delete, axis=1)  #delete the column
+        next_board_mat = np.delete(next_board_mat, row_to_delete, axis=0)  #delete the row
+        new_index = [i for i in list(range(height)) if (i not in row_to_delete)]
+        next_row_num_list = [row_num_list[x] for x in new_index]
+        sol_result = pent_cover_solver_helper(next_board_mat, cur_solution, next_row_num_list)
+        if sol_result:
+            return sol_result
+        cur_solution.remove(row_num_list[r])
