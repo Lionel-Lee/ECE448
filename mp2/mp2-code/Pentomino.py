@@ -87,6 +87,8 @@ def check_correctness(sol_list, board, pents):
     if np.count_nonzero(board) != np.count_nonzero(np.multiply(board, sol_board)):
         return False
     
+    print(board)
+
     return True
         
 
@@ -99,13 +101,14 @@ if __name__ == "__main__":
     well on the pentomino set you should be fine. 
     """
     board = instances.board_6x10
-    pents = instances.dominos
-    print(pents)
+    pents = instances.petnominos
     sol_list = solve(board, pents)
     if check_correctness(sol_list, board, pents):
         print("PASSED!")
     else:
         print("FAILED...")
+
+    
     
     
    
