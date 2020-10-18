@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+#import Pentomino
+#import instances
 
 def solve(board, pents):
     """

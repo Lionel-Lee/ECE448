@@ -4,7 +4,6 @@
 import numpy as np
 import instances
 from solve import solve
-    
 def get_pent_idx(pent):
     """
     Returns the index of a pentomino.
@@ -101,6 +100,7 @@ if __name__ == "__main__":
     """
     board = instances.board_6x10
     pents = instances.dominos
+    print(pents)
     sol_list = solve(board, pents)
     if check_correctness(sol_list, board, pents):
         print("PASSED!")
