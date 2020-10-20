@@ -60,9 +60,9 @@ class ultimateTicTacToe:
         """
         #YOUR CODE HERE
         score=0
+
         return score
-
-
+    
     def evaluateDesigned(self, isMax):
         """
         This function implements the evaluation function for ultimate tic tac toe for your own agent.
@@ -145,7 +145,15 @@ class ultimateTicTacToe:
         #YOUR CODE HERE
         bestValue=0.0
         return bestValue
-
+    def available_move(self,currBoardIdx):
+        x=self.globalIdx[currBoardIdx][0]
+        y=self.globalIdx[currBoardIdx][1]
+        available=[]
+        for i in range(0,3):
+            for j in range(0,3):
+                if self.board[i][j] == '_':
+                    available.append((i,j))
+        return available
     def minimax(self, depth, currBoardIdx, isMax):
         """
         This function implements minimax algorithm for ultimate tic-tac-toe game.
@@ -161,6 +169,21 @@ class ultimateTicTacToe:
         """
         #YOUR CODE HERE
         bestValue=0.0
+        if (depth >= self.maxDepth) or (not self.checkMovesLeft()) or (self.checkWinner()):
+            self.expandedNodes +=1
+            return self.evaluatePredifined(isMax)
+        if isMax:
+            bestValue=-10001
+            for iter in self.available_move(currBoardIdx):
+                self.board[iter[0]][iter[1]] = self.maxPlayer
+                bestValue=max(bestValue, self.minimax(self,depth+1,(iter[0]*3+iter[1]),not isMax))
+                self.board[iter[0]][iter[1]] = '_'
+        else:
+            bestValue=10001
+            for iter in self.available_move(currBoardIdx):
+                self.board[iter[0]][iter[1]] = self.minPlayer
+                bestValue=min(bestValue, self.minimax(self,depth+1,(iter[0]*3+iter[1]),not isMax))
+                self.board[iter[0]][iter[1]] = '_'
         return bestValue
 
     def playGamePredifinedAgent(self,maxFirst,isMinimaxOffensive,isMinimaxDefensive):
