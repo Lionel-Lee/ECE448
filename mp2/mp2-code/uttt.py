@@ -98,7 +98,36 @@ class ultimateTicTacToe:
         """
         #YOUR CODE HERE
         winner=0
-        return 0
+        #check 
+        for start_point in self.globalIdx:
+            #check row 
+            if (self.board[start_point[0]][start_point[1]] == self.board[start_point[0]][start_point[1]+1] == self.board[start_point[0]][start_point[1]+2]==self.maxPlayer) \
+                or (self.board[start_point[0]+1][start_point[1]] == self.board[start_point[0]+1][start_point[1]+1] == self.board[start_point[0]+1][start_point[1]+2]==self.maxPlayer) \
+                or (self.board[start_point[0]+2][start_point[1]] == self.board[start_point[0]+2][start_point[1]+1] == self.board[start_point[0]+2][start_point[1]+2]==self.maxPlayer):
+                winner=1
+            if (self.board[start_point[0]][start_point[1]] == self.board[start_point[0]][start_point[1]+1] == self.board[start_point[0]][start_point[1]+2]==self.minPlayer) \
+                or (self.board[start_point[0]+1][start_point[1]] == self.board[start_point[0]+1][start_point[1]+1] == self.board[start_point[0]+1][start_point[1]+2]==self.minPlayer) \
+                or (self.board[start_point[0]+2][start_point[1]] == self.board[start_point[0]+2][start_point[1]+1] == self.board[start_point[0]+2][start_point[1]+2]==self.minPlayer):
+                winner=-1
+            #check column
+            if (self.board[start_point[0]][start_point[1]] == self.board[start_point[0]+1][start_point[1]] == self.board[start_point[0]+2][start_point[1]]==self.maxPlayer) \
+                or (self.board[start_point[0]][start_point[1]+1] == self.board[start_point[0]+1][start_point[1]+1] == self.board[start_point[0]+2][start_point[1]+1]==self.maxPlayer) \
+                or (self.board[start_point[0]][start_point[1]+2] == self.board[start_point[0]+1][start_point[1]+2] == self.board[start_point[0]+2][start_point[1]+2]==self.maxPlayer):
+                winner=1
+            if (self.board[start_point[0]][start_point[1]] == self.board[start_point[0]+1][start_point[1]] == self.board[start_point[0]+2][start_point[1]]==self.minPlayer) \
+                or (self.board[start_point[0]][start_point[1]+1] == self.board[start_point[0]+1][start_point[1]+1] == self.board[start_point[0]+2][start_point[1]+1]==self.minPlayer) \
+                or (self.board[start_point[0]][start_point[1]+2] == self.board[start_point[0]+1][start_point[1]+2] == self.board[start_point[0]+2][start_point[1]+2]==self.minPlayer):
+                winner=-1
+            # check diagonal
+            if (self.board[start_point[0]][start_point[1]] == self.board[start_point[0]+1][start_point[1]+1] == self.board[start_point[0]+2][start_point[1]+2]==self.maxPlayer):
+              winner=1
+            if (self.board[start_point[0]][start_point[1]] == self.board[start_point[0]+1][start_point[1]+1] == self.board[start_point[0]+2][start_point[1]+2]==self.minPlayer):
+              winner=-1
+            if (self.board[start_point[0]][start_point[1]+2] == self.board[start_point[0]+1][start_point[1]+1] == self.board[start_point[0]+2][start_point[1]]==self.maxPlayer):
+              winner=1
+            if (self.board[start_point[0]][start_point[1]+2] == self.board[start_point[0]+1][start_point[1]+1] == self.board[start_point[0]+2][start_point[1]]==self.minPlayer):
+              winner=1
+        return winner
 
     def alphabeta(self,depth,currBoardIdx,alpha,beta,isMax):
         """
