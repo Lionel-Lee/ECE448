@@ -103,6 +103,8 @@ if __name__ == "__main__":
     board = instances.board_6x10
     pents = instances.petnominos
     sol_list = solve(board, pents)
+    pents = instances.dominos
+    sol_list = solve(board, pents)
     if check_correctness(sol_list, board, pents):
         print("PASSED!")
     else:
