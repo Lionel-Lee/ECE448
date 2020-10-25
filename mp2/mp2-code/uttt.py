@@ -40,6 +40,9 @@ class ultimateTicTacToe:
         self.expandedNodes=0
         self.currPlayer=True
 
+        self.A = 0.5
+        self.B = 1 - self.A 
+
     def printGameBoard(self):
         """
         This function prints the current game board.
@@ -313,7 +316,8 @@ class ultimateTicTacToe:
             bestValue = -inf
             for iter in self.available_move(currBoardIdx):
                 self.board[iter[0]][iter[1]] = self.maxPlayer
-                bestValue = max(bestValue, 0.6*self.new_alpha_beta(depth+1, ((iter[0]%3)*3 + iter[1]%3), alpha,beta,not isMax)+0.4*self.evaluateDesigned(isMax))
+                bestValue = max(bestValue, self.A * self.new_alpha_beta(depth+1, ((iter[0]%3)*3 + iter[1]%3), alpha,beta,not isMax) + \
+                                    self.B * self.evaluateDesigned(not isMax))
                 self.board[iter[0]][iter[1]] = '_'
                 if bestValue >= beta:
                     return bestValue
@@ -324,7 +328,8 @@ class ultimateTicTacToe:
             bestValue = inf
             for iter in self.available_move(currBoardIdx):
                 self.board[iter[0]][iter[1]] = self.minPlayer
-                bestValue = min(bestValue, 0.6*self.new_alpha_beta(depth+1, ((iter[0]%3)*3+iter[1]%3), alpha,beta,not isMax)+0.4*self.evaluateDesigned(isMax))
+                bestValue = min(bestValue, self.A * self.new_alpha_beta(depth+1, ((iter[0]%3)*3+iter[1]%3), alpha,beta,not isMax) + \
+                                            self.B * self.evaluateDesigned(not isMax))
                 self.board[iter[0]][iter[1]] = '_'
                 if bestValue <= alpha:
                     return bestValue
@@ -455,10 +460,6 @@ class ultimateTicTacToe:
         return gameBoards, bestMove, expandedNodes, bestValue, winner
 
 
-    def getNextBoardIdx(self, i, j):
-        return (i % 3) * 3 + j % 3
-
-
     def playGameYourAgent(self,maxFirst):
         """
         This function implements the processes of the game of your own agent vs predifined offensive agent.
@@ -476,8 +477,6 @@ class ultimateTicTacToe:
         bestValue = []
         self.currPlayer = maxFirst           # True for max, False for min
         cur_board_idx = self.startBoardIdx
-        isMinimaxOffensive =0
-        isMiniMaxDefensive =0
         alpha = -inf
         beta = inf
         while((self.checkWinner() == 0) and self.checkMovesLeft()):
@@ -498,7 +497,8 @@ class ultimateTicTacToe:
                         if self.currPlayer:
                             attempt_value=self.alphabeta(0, next_board_idx, alpha, beta, not self.currPlayer)
                         if not self.currPlayer:
-                            attempt_value=0.6*self.new_alpha_beta(0, next_board_idx, alpha, beta, not self.currPlayer)+0.4*self.evaluateDesigned(self.currPlayer)
+                            attempt_value=self.A * self.new_alpha_beta(0, next_board_idx, alpha, beta, not self.currPlayer) + \
+                                           self.B * self.evaluateDesigned(not self.currPlayer)
                         
                         self.board[x+i][y+j] = '_'          #remove the attempt move
 
@@ -594,36 +594,38 @@ def checkvalid(self,x,y,currBoardIdx):
     return True
     
 if __name__=="__main__":
-    uttt=ultimateTicTacToe()
-    gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
+    # uttt=ultimateTicTacToe()
+    # gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
+    # gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,True,True)
     #gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGameHuman()
-    # win=0
-    # lose=0
-    # whether =0
-    # for i in range(18):
-    #     uttt=ultimateTicTacToe()
-    #     winner=0
-    #     # whether=randint(0,1)
-    #     uttt.startBoardIdx=int(i/2)
-    #     gameBoards, bestMove, winner = uttt.playGameYourAgent(whether)
-    #     whether = 1- whether
-    #     uttt.printGameBoard()
-    #     # gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
-    #     if winner == 1:
-    #         print("The winner is maxPlayer!!!")
-    #         win+=1
-    #     elif winner == -1:
-    #         print("The winner is minPlayer!!!")
-    #         lose+=1
-    #     else:
-    #         print("Tie. No winner:(")
-        
-    #     continue
-    # print(win,lose)
+    win=0
+    lose=0
+    whether =0
+    for i in range(18):
+        uttt=ultimateTicTacToe()
+        winner=0
+        # whether=randint(0,1)
+        uttt.startBoardIdx=int(i/2)
+        gameBoards, bestMove, winner = uttt.playGameYourAgent(whether)
+        whether = 1- whether
+        uttt.printGameBoard()
+        # gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
+        if winner == 1:
+            print("The winner is maxPlayer!!!")
+            win+=1
+        elif winner == -1:
+            print("The winner is minPlayer!!!")
+            lose+=1
+        else:
+            print("Tie. No winner:(")
+        continue
+
+    print(win,lose)
+
     # uttt.printGameBoard()
-    if winner == 1:
-        print("The winner is maxPlayer!!!")
-    elif winner == -1:
-        print("The winner is minPlayer!!!")
-    else:
-        print("Tie. No winner:(")
+    # if winner == 1:
+    #     print("The winner is maxPlayer!!!")
+    # elif winner == -1:
+    #     print("The winner is minPlayer!!!")
+    # else:
+    #     print("Tie. No winner:(")
