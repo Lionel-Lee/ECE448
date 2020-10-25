@@ -457,10 +457,6 @@ class ultimateTicTacToe:
         return gameBoards, bestMove, expandedNodes, bestValue, winner
 
 
-    def getNextBoardIdx(self, i, j):
-        return (i % 3) * 3 + j % 3
-
-
     def playGameYourAgent(self):
         """
         This function implements the processes of the game of your own agent vs predifined offensive agent.
@@ -595,6 +591,7 @@ def checkvalid(self,x,y,currBoardIdx):
     if (x<self.globalIdx[currBoardIdx][1] or x>self.globalIdx[currBoardIdx][1]+2 or y<self.globalIdx[currBoardIdx][0] or y>self.globalIdx[currBoardIdx][0]+2):
         return False
     return True
+    
 if __name__=="__main__":
     
     # gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
