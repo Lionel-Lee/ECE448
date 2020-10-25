@@ -594,32 +594,37 @@ def checkvalid(self,x,y,currBoardIdx):
     
 if __name__=="__main__":
     
+    uttt=ultimateTicTacToe()
+    gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,True,True)
+    # gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,True,False)
+    # gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,True)
     # gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
+
     #gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGameHuman()
-    win=0
-    lose=0
-    for i in range(20):
-        uttt=ultimateTicTacToe()
-        winner=0
-        uttt.startBoardIdx=randint(0,8)
-        gameBoards, bestMove, winner = uttt.playGameYourAgent()
-        uttt.printGameBoard()
-        # gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
-        if winner == 1:
-            print("The winner is maxPlayer!!!")
-            win+=1
-        elif winner == -1:
-            print("The winner is minPlayer!!!")
-            lose+=1
-        else:
-            print("Tie. No winner:(")
+    # win=0
+    # lose=0
+    # for i in range(20):
+    #     uttt=ultimateTicTacToe()
+    #     winner=0
+    #     uttt.startBoardIdx=randint(0,8)
+    #     gameBoards, bestMove, winner = uttt.playGameYourAgent()
+    #     uttt.printGameBoard()
+    #     # gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
+    #     if winner == 1:
+    #         print("The winner is maxPlayer!!!")
+    #         win+=1
+    #     elif winner == -1:
+    #         print("The winner is minPlayer!!!")
+    #         lose+=1
+    #     else:
+    #         print("Tie. No winner:(")
         
-        continue
-    print(win,lose)
+    #     continue
+    # print(win,lose)
     # uttt.printGameBoard()
-    # if winner == 1:
-    #     print("The winner is maxPlayer!!!")
-    # elif winner == -1:
-    #     print("The winner is minPlayer!!!")
-    # else:
-    #     print("Tie. No winner:(")
+    if winner == 1:
+        print("The winner is maxPlayer!!!")
+    elif winner == -1:
+        print("The winner is minPlayer!!!")
+    else:
+        print("Tie. No winner:(")
