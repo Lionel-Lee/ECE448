@@ -592,6 +592,7 @@ def checkvalid(self,x,y,currBoardIdx):
     if (x<self.globalIdx[currBoardIdx][1] or x>self.globalIdx[currBoardIdx][1]+2 or y<self.globalIdx[currBoardIdx][0] or y>self.globalIdx[currBoardIdx][0]+2):
         return False
     return True
+    
 if __name__=="__main__":
     uttt=ultimateTicTacToe()
     gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
@@ -620,9 +621,9 @@ if __name__=="__main__":
     #     continue
     # print(win,lose)
     # uttt.printGameBoard()
-    # if winner == 1:
-    #     print("The winner is maxPlayer!!!")
-    # elif winner == -1:
-    #     print("The winner is minPlayer!!!")
-    # else:
-    #     print("Tie. No winner:(")
+    if winner == 1:
+        print("The winner is maxPlayer!!!")
+    elif winner == -1:
+        print("The winner is minPlayer!!!")
+    else:
+        print("Tie. No winner:(")
