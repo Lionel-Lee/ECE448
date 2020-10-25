@@ -124,9 +124,9 @@ class ultimateTicTacToe:
             for i in range(9):
                 row, col = self.globalIdx[i]
                 for y, x in [(row, col), (row + 2, col), (row, col + 2), (row + 2, col + 2)]:
-                    if self.board[y][x] == self.maxPlayer:
+                    if self.board[y][x] == self.maxPlayer and isMax:
                         score += 30
-                    elif self.board[y][x] == self.minPlayer:
+                    elif self.board[y][x] == self.minPlayer and not isMax:
                         score -= 30
 
         return score
