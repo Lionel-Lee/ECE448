@@ -562,6 +562,7 @@ class ultimateTicTacToe:
                 self.board[best_move[0]][best_move[1]] = self.minPlayer #deciede the move
             else:
                 print("Determine your decision!")
+                print("Current board index is",cur_board_idx,"!")
                 x = int(input("Row position: "))
                 y = int(input("Column position: "))
                 while not checkvalid(self,x,y,cur_board_idx) :
@@ -586,12 +587,14 @@ class ultimateTicTacToe:
 
 def checkvalid(self,x,y,currBoardIdx):
     print(self.globalIdx[currBoardIdx][0]," ",self.globalIdx[currBoardIdx][1])
-    if (x<0 or x>8 or y<0 or y>8):
+    if (x<0 or x>2 or y<0 or y>2):
         return False
     if (self.board[x][y] != '_'):
         return False
     if (x<self.globalIdx[currBoardIdx][0] or x>self.globalIdx[currBoardIdx][0]+2 or y<self.globalIdx[currBoardIdx][1] or y>self.globalIdx[currBoardIdx][1]+2):
         return False
+    # if (x<self.globalIdx[currBoardIdx][0] or x>self.globalIdx[currBoardIdx][0]+2 or y<self.globalIdx[currBoardIdx][1] or y>self.globalIdx[currBoardIdx][1]+2):
+    #     return False
     return True
     
 if __name__=="__main__":
