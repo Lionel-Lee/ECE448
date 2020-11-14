@@ -38,7 +38,7 @@ def readFile(filename,stop_words):
     the text in each file and the corresponding labels
     """
     translator = str.maketrans("", "", string.punctuation)
-    with open(filename) as csv_file:
+    with open(filename,'r', encoding='utf-8') as csv_file:
         labels = []
         data = []
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -95,7 +95,6 @@ if __name__ == '__main__':
     x_train, y_train, x_test, y_test = load_dataset()
     MNB = TextClassifier()
     MNB.fit(x_train, y_train)
-
     accuracy,pred = MNB.predict(x_test, y_test)
     compute_results(y_test,pred)
 
