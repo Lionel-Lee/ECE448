@@ -336,6 +336,7 @@ class ultimateTicTacToe:
                 beta=min(beta,bestValue)
 
 
+
         return bestValue
 
 
@@ -372,14 +373,18 @@ class ultimateTicTacToe:
             bestValue = -inf
             for iter in self.available_move(currBoardIdx):
                 self.board[iter[0]][iter[1]] = self.maxPlayer
-                bestValue = max(bestValue, self.minimax(depth+1, ((iter[0]%3)*3 + iter[1]%3), not isMax))
+                bestValue = max(bestValue, self.minimax(depth + 1, self.getNextBoardIdx(iter[0], iter[1]), not isMax))
+                # currValue = self.minimax(depth+1, self.getNextBoardIdx(iter[0],iter[1]), not isMax)
                 self.board[iter[0]][iter[1]] = '_'
+                # bestValue = max(bestValue, currValue)
         else:
             bestValue = inf
             for iter in self.available_move(currBoardIdx):
                 self.board[iter[0]][iter[1]] = self.minPlayer
-                bestValue = min(bestValue, self.minimax(depth+1, ((iter[0]%3)*3+iter[1]%3), not isMax))
+                bestValue = min(bestValue, self.minimax(depth+1, self.getNextBoardIdx(iter[0],iter[1]), not isMax))
+                # currValue = self.minimax(depth + 1, self.getNextBoardIdx(iter[0], iter[1]), not isMax)
                 self.board[iter[0]][iter[1]] = '_'
+                # bestValue = max(bestValue, currValue)
         return bestValue
 
     def playGamePredifinedAgent(self,maxFirst,isMinimaxOffensive,isMinimaxDefensive):
@@ -391,7 +396,7 @@ class ultimateTicTacToe:
         isMinimaxOffensive(bool):boolean variable indicates whether it's using minimax or alpha-beta pruning algorithm for offensive agent.
                         True is minimax and False is alpha-beta.
         isMinimaxDefensive(bool):boolean variable indicates whether it's using minimax or alpha-beta pruning algorithm for defensive agent.
-                        True is minimax and False is alpha-beta.
+                        True is minimax and False is alpha-beta.alpha
         output:
         bestMove(list of tuple): list of bestMove coordinates at each step
         bestValue(list of float): list of bestValue at each move
@@ -451,12 +456,13 @@ class ultimateTicTacToe:
             bestValue.append(best_value)
             self.currPlayer = not self.currPlayer           #swap player
 
-            self.printGameBoard()
-            print('=======================')
+            #self.printGameBoard()
+            #print('=======================')
      
-        self.printGameBoard()
+        #self.printGameBoard()
         winner = self.checkWinner()
-  
+
+
         return gameBoards, bestMove, expandedNodes, bestValue, winner
 
 
