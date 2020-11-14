@@ -42,7 +42,7 @@ class NaiveBayes(object):
 			for pixel_counter in range(len(train_set[set_counter])):
 				self.likelihood[pixel_counter, int(train_set[set_counter][pixel_counter]), train_label[set_counter]] += 1
 		#laplace smooth
-		k = 0.1
+		k = 0.11
 		for i in range(self.num_class):
 			self.likelihood[:, :, i] = (self.likelihood[:, :, i] + k) / (self.prior[i] + self.num_value * k)
 		#log

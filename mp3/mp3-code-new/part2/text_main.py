@@ -22,7 +22,7 @@ def read_stop_words(filename):
        Returns a set of stop words
     """
     stop_words=set()
-    with open(filename) as csv_file:
+    with open(filename, 'r', encoding='utf-8') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
 
         for row in csv_reader:
@@ -38,7 +38,7 @@ def readFile(filename,stop_words):
     the text in each file and the corresponding labels
     """
     translator = str.maketrans("", "", string.punctuation)
-    with open(filename) as csv_file:
+    with open(filename, 'r', encoding='utf-8') as csv_file:
         labels = []
         data = []
         csv_reader = csv.reader(csv_file, delimiter=',')
