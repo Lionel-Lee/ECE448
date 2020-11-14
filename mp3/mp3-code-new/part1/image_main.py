@@ -103,6 +103,8 @@ if __name__ == '__main__':
     plot_visualization(feature_likelihoods, class_names, "Greys")
     # Classify the test sets. 
     accuracy, y_pred = NB.test(x_test,y_test)
+    print(accuracy)
+    print(y_pred)
     # Plot confusion matrix. 
     plot_confusion_matrix(y_test, y_pred, classes=class_names, normalize=True,
                       title='Confusion matrix, with normalization')

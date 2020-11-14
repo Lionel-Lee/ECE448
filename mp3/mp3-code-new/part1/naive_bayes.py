@@ -37,6 +37,17 @@ class NaiveBayes(object):
 		"""
 
 		# YOUR CODE HERE
+		for set_counter in range(len(train_label)):
+			self.prior[train_label[set_counter]] += 1 #update P(class) in every label
+			for pixel_counter in range(len(train_set[set_counter])):
+				self.likelihood[pixel_counter, int(train_set[set_counter][pixel_counter]), train_label[set_counter]] += 1
+		#laplace smooth
+		k = 0.1
+		for i in range(self.num_class):
+			self.likelihood[:, :, i] = (self.likelihood[:, :, i] + k) / (self.prior[i] + self.num_value * k)
+		#log
+		self.likelihood = np.log(self.likelihood)
+		self.prior = np.log(self.prior/len(train_label)) # update P(class)
 		pass
 
 	def test(self,test_set,test_label):
@@ -59,8 +70,17 @@ class NaiveBayes(object):
 		accuracy = 0
 		pred_label = np.zeros((len(test_set)))
 
-		pass
-
+		for set_counter in range(len(test_label)):
+			evaluation = np.zeros(self.num_class)
+			for class_counter in range(self.num_class):
+				evaluation[class_counter] = self.prior[class_counter]
+				for pixel_counter in range(self.feature_dim):
+					value = int(test_set[set_counter][pixel_counter])
+					evaluation[class_counter] += self.likelihood[pixel_counter, value, class_counter]
+			pred_label[set_counter] = np.argmax(evaluation)
+			if (pred_label[set_counter] == test_label[set_counter]):
+				accuracy += 1
+		accuracy /= len(test_set)
 		return accuracy, pred_label
 
 
@@ -94,6 +114,6 @@ class NaiveBayes(object):
 	    """
 	    # YOUR CODE HERE
 	    
-	    feature_likelihoods = np.zeros((likelihood.shape[0],likelihood.shape[2]))
+	    #feature_likelihoods = np.zeros((likelihood.shape[0],likelihood.shape[2]))
 
-	    return feature_likelihoods
+	    return np.sum(np.exp(likelihood[:,128:,:]), axis=1)
