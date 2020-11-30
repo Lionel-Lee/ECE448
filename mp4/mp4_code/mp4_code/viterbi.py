@@ -117,7 +117,7 @@ def viterbi_p1(train, test):
                         cur_tag = tagarray[tag_idx]
                         prev_tag = tagarray[prev_tag_idx]
                         trans_prob = math.log((num_tag_tag[(prev_tag,cur_tag)]+k)/(num_tag[prev_tag]+k*16))
-                        emission_prob = math.log((num_word_tag[(cur_word,cur_tag)]+k)/(num_tag[cur_tag]+k*(1+kindsofwords)))
+                        emission_prob = math.log((num_word_tag[(cur_word,cur_tag)]+k)/(num_tag[cur_tag]+k*kindsofwords))
                         cur_prob = prev_prob + trans_prob + emission_prob
 
                         if cur_prob > max_prob:
