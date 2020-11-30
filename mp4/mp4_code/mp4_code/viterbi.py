@@ -3,6 +3,7 @@ This is the main entry point for MP4. You should only modify code
 within this file -- the unrevised staff files will be used for all other
 files and classes when code is run, so be careful to not modify anything else.
 """
+import math
 
 from collections import Counter
 import math
