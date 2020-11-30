@@ -65,7 +65,23 @@ class TextClassifier(object):
         print(sum)
         for label in range(1,15):
             self.prob_class[label]=math.log(self.class_count[label]/sum)
-        k=0.1
+        # use to print top 20 words each of class
+        # for i in range(1,15):
+        #     top={}
+        #     for key in self.count_word.keys():
+        #         # print(key)
+        #         top[key]= self.count_word[key][i]
+        #     # sorted(top,reverse=True)
+        #     print("In class",i,", the top 20 words are:")
+        #     counter=0
+        #     for j in sorted(top.items(), key = lambda kv:(kv[1], kv[0]),reverse=True):
+        #         counter += 1
+        #         print(j,end="")
+        #         if counter == 20:
+        #             break
+        #     print(" ")
+                
+        k=0.5
         for label in range(1,15):
             for word in self.count_word.keys():
                 self.prob_word[word][label]=math.log((self.count_word[word][label]+k)/(self.class_count[label]+14 * k))
@@ -91,6 +107,7 @@ class TextClassifier(object):
             max_class=0
             count += 1.0
             for each_label in range(1,15):
+                # temp=0
                 temp=self.prob_class[each_label]
                 for word in sets:
                     if word in self.prob_word:
