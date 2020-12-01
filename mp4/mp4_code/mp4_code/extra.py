@@ -46,7 +46,7 @@ def extra(train,test):
                 num_tag_tag[(prev_word_tag[1],word_tag[1])] += 1
 
     kindsofwords = len(num_word)
-    k = 0.00001
+    k = 0.13
     for each in num_word_tag:
         if (num_word_tag[each] == 1):
             scale[each[1]] +=1
