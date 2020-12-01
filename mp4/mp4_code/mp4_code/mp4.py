@@ -17,8 +17,9 @@ def main(args):
     print("Loaded dataset")
     print()
 
-    for algorithm, name in zip([baseline, viterbi_p1, viterbi_p2, extra], ['Baseline', 'Viterbi_p1', 'Viterbi_p2', 'extra']):
+    # for algorithm, name in zip([baseline, viterbi_p1, viterbi_p2, extra], ['Baseline', 'Viterbi_p1', 'Viterbi_p2', 'extra']):
     # for algorithm,name in zip ([viterbi_p1],['Viterbi_p1']):
+    for algorithm,name in zip ([extra],['extra']):
         print("Running {}...".format(name))
         testtag_predictions = algorithm(train_set, utils.strip_tags(test_set))
         baseline_acc, correct_wordtagcounter, wrong_wordtagcounter = utils.evaluate_accuracies(test_set,

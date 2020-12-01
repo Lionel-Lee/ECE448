@@ -200,7 +200,10 @@ def viterbi_p2(train, test):
             cur_word = sentence[word_idx]
             if (word_idx == 0):                 #initial probabilities
                 for tag_idx in range(16):
-                    trellis[word_idx][tag_idx][0] = math.log((num_init_tag[tagarray[tag_idx]] + k)/(total_sentences+k*16))
+                    if tagarray[tag_idx] in num_init_tag:
+                        trellis[word_idx][tag_idx][0] = math.log((num_init_tag[tagarray[tag_idx]] + k)/(total_sentences+k*16))
+                    else:
+                        trellis[word_idx][tag_idx][0] = math.log(k/(total_sentences+k*16)) 
                     # p1 = math.log((num_tag[tagarray[tag_idx]] + k)/(total_words+k*(kindsofwords+1)))
                     # p2 = math.log((num_word_tag[(sentence[word_idx],tagarray[tag_idx])] + k)/(num_tag[tagarray[tag_idx]]+k*(kindsofwords+1)))
                     # trellis[word_idx][tag_idx][0] = p1 + p2
