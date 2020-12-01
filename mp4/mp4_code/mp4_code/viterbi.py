@@ -3,14 +3,20 @@ This is the main entry point for MP4. You should only modify code
 within this file -- the unrevised staff files will be used for all other
 files and classes when code is run, so be careful to not modify anything else.
 """
-import math
 
 from collections import Counter
+import math
 
 tagset = {'NOUN', 'VERB', 'ADJ', 'ADV',
           'PRON', 'DET', 'IN', 'NUM',
           'PART', 'UH', 'X', 'MODAL',
           'CONJ', 'PERIOD', 'PUNCT', 'TO'}
+
+tagarray = ['NOUN', 'VERB', 'ADJ', 'ADV',
+          'PRON', 'DET', 'IN', 'NUM',
+          'PART', 'UH', 'X', 'MODAL',
+          'CONJ', 'PERIOD', 'PUNCT', 'TO']
+
 def baseline(train, test):
     '''
     TODO: implement the baseline algorithm. This function has time out limitation of 1 minute.
@@ -22,7 +28,6 @@ def baseline(train, test):
             E.g. [[(word1, tag1), (word2, tag2)...], [(word1, tag1), (word2, tag2)...]...]
     '''
 
-    predict = []
     num_word = Counter()
     num_tag = Counter()
     num_word_tag = Counter()
@@ -34,7 +39,8 @@ def baseline(train, test):
             num_word_tag[word_tag] += 1
 
     most_recent_tag = num_tag.most_common(1)[0][0]
-    
+
+    predict = []    
     for sentence in test:                           #inference
         sentence_predict = []   
         for word in sentence:
@@ -48,12 +54,6 @@ def baseline(train, test):
         predict.append(sentence_predict)    
         
     return predict
-    
-
-
-
-
-
 
 def viterbi_p1(train, test):
     '''
@@ -65,110 +65,78 @@ def viterbi_p1(train, test):
     output: list of sentences with tags on the words
             E.g. [[(word1, tag1), (word2, tag2)...], [(word1, tag1), (word2, tag2)...]...]
     '''
+    num_word = Counter()
+    num_tag = Counter()
+    num_word_tag = Counter()
+    num_tag_tag = Counter()
+    num_init_tag = Counter()
 
-    predicts = []
-    tags={}
-    tag_pairs={}
-    tag_word={}
-    total_words=0
-    unique_words=0
-    tag_trans_pair=0
-    #pre count 
-    for each_sent in train:
-        for index in range(0,len(each_sent)):
-            word_tag_pair=each_sent[index]
-            total_words += 1
-            word= word_tag_pair[0]
-            tag= word_tag_pair[1]
-            #add tag count
-            if tag not in tags:
-                tags[tag] = 1
+    total_sentences = 0
+    total_words = 0
+    for sentence in train:                          #train
+        num_init_tag[sentence[0][1]] += 1
+        total_sentences += 1
+        total_words += len(sentence)
+        for i in range(len(sentence)):
+            word_tag = sentence[i]
+            num_word[word_tag[0]] += 1
+            num_tag[word_tag[1]] += 1
+            num_word_tag[word_tag] += 1
+            if not i==0:
+                prev_word_tag = sentence[i-1]
+                num_tag_tag[(prev_word_tag[1],word_tag[1])] += 1
+
+    kindsofwords = len(num_word)
+    k = 0.00001
+    predict = []
+    for sentence in test:                           #inference
+        sentence_predict = []  
+        trellis = []
+        for _ in range(len(sentence)):
+            prob_prev = []         
+            for _ in range(16):
+                prob_prev.append([0.0, -1])         #one of 16 entries in tag_prob_prev 
+                                                    # = (probability, previous_tag_idx)
+            trellis.append(prob_prev)           #3D trellis ==> [N][16][2]
+
+        for word_idx in range(len(sentence)):
+            cur_word = sentence[word_idx]
+            if (word_idx == 0):                 #initial probabilities
+                for tag_idx in range(16):
+                    trellis[word_idx][tag_idx][0] = math.log((num_init_tag[tagarray[tag_idx]] + k)/(total_sentences+k*16))
+                    # p1 = math.log((num_tag[tagarray[tag_idx]] + k)/(total_words+k*(kindsofwords+1)))
+                    # p2 = math.log((num_word_tag[(sentence[word_idx],tagarray[tag_idx])] + k)/(num_tag[tagarray[tag_idx]]+k*(kindsofwords+1)))
+                    # trellis[word_idx][tag_idx][0] = p1 + p2
             else:
-                tags[tag] +=1
-            #add tag_words count
-            if tag in tag_word:
-                if word in tag_word:
-                    tag_word[tag][word] +=1
-                else:
-                    tag_trans_pair +=1
-                    tag_word[tag][word] =1
-            else:
-                tag_trans_pair +=1
-                tag_word[tag] = {word : 1}
-            #add tag_pairs count
-            if (index != (len(each_sent)-1)):
-                next_pair=each_sent[index+1]
-                next_tag=next_pair[1]
-                if tag in tag_pairs:
-                    if next_tag in tag_pairs[tag]:
-                        tag_pairs[tag][next_tag] +=1
-                    else:
-                        tag_pairs[tag][next_tag] =1
-                else:
-                    tag_pairs[tag]={next_tag:1}
-    #calculate prob
-    #first for tag prob
-    k=0.000001
-    tag_sum=sum(tags.values())
-    for tag in tagset:
-        if tag in tags:
-            tags[tag]= math.log((tags[tag]+k)/(tag_sum + 16*k))
-        else:
-            tags[tag]= math.log((k)/(tag_sum + 16*k))
-    #for tag_words prob
-    for tag in tagset:
-        tag_sum=sum(tag_word[tag].values())
-        tag_word[tag]['UNKNOWN']=0
-        for word in tag_word[tag]:
-            tag_word[tag][word]= math.log((tag_word[tag][word]+k)/(tag_sum + (len(tag_word))*k))
-    #for tag_pair prob:
-    for tag in tag_pairs:
-        tag_sum=sum(tag_pairs[tag].values())
-        for next_tag in tagset:
-            if next_tag in tag_pairs[tag]:
-                tag_pairs[tag][next_tag]= math.log((tag_pairs[tag][next_tag]+k)/(tag_sum + (len(tag_pairs[tag])+ 1)*k))
-            else:
-                tag_pairs[tag][next_tag]= math.log((k)/(tag_sum + (len(tag_pairs[tag]) + 1)*k)) 
-    # raise Exception("You must implement me")
-    for each_sent in test:
-        best_tag=[]
-        best_prob=[]
-        local_best_tag={}
-        local_best_prob={}
-        #first column
-        for each_tag in tagset:
-            local_best_prob[each_tag]=tags[each_tag]
-            local_best_tag[each_tag]='st'
-        # print(local_best_prob)
-        best_tag.append(local_best_tag)
-        best_prob.append(local_best_prob)
-        for i in range(1,len(each_sent)+1):
-            local_best_tag={}
-            local_best_prob={}
-            for next_tag in tagset:
-                temp=float('-inf')
-                for tag in tagset:
-                    a=best_prob[i-1][tag]
-                    b=tag_pairs[tag][next_tag]
-                    c=tag_word[next_tag].get(each_sent[i-1],tag_word[next_tag]['UNKNOWN'])
-                    if (a+b+c>temp):
-                        temp=best_prob[i-1][tag]\
-                            +tag_pairs[tag][next_tag]\
-                            +tag_word[next_tag].get(each_sent[i-1],tag_word[next_tag]['UNKNOWN'])
-                        local_best_prob[next_tag]=a+b+c
-                        local_best_tag[next_tag]=tag
-            best_tag.append(local_best_tag)
-            best_prob.append(local_best_prob)
-        temp_ans=[]
-        temp_ans.insert(0,(each_sent[len(each_sent)-1],max(best_prob[len(each_sent)],key=best_prob[len(each_sent)].get)))
-        curr_tag=best_tag[len(each_sent)][max(best_prob[len(each_sent)],key=best_prob[len(each_sent)].get)]
-        for i in range(len(each_sent)-1,0,-1):
-            temp_ans.insert(0,(each_sent[i-1],curr_tag))
-            curr_tag=best_tag[i][curr_tag]
-        predicts.append(temp_ans)
-        # print(temp_ans)
-        # return predicts
-    return predicts
+                for tag_idx in range(16):
+                    prev_idx = -1
+                    max_prob = float("-inf")
+                    for prev_tag_idx in range(16):
+                        prev_prob = trellis[word_idx-1][prev_tag_idx][0]
+                        cur_tag = tagarray[tag_idx]
+                        prev_tag = tagarray[prev_tag_idx]
+                        trans_prob = math.log((num_tag_tag[(prev_tag,cur_tag)]+k)/(num_tag[prev_tag]+k*16))
+                        emission_prob = math.log((num_word_tag[(cur_word,cur_tag)]+k)/(num_tag[cur_tag]+k*(1+kindsofwords)))
+                        cur_prob = prev_prob + trans_prob + emission_prob
+
+                        if cur_prob > max_prob:
+                            prev_idx = prev_tag_idx
+                            max_prob = cur_prob
+                    trellis[word_idx][tag_idx][1] = prev_idx
+                    trellis[word_idx][tag_idx][0] = max_prob
+        #back trace
+        max_prob = float("-inf")
+        max_tag_idx = -1
+        for tag_idx in range(16):
+            if trellis[-1][tag_idx][0] > max_prob:
+                max_prob = trellis[-1][tag_idx][0]
+                max_tag_idx = tag_idx
+        for i in range(len(sentence)-1,-1,-1):
+            sentence_predict.append((sentence[i], tagarray[max_tag_idx]))
+            max_tag_idx = trellis[i][max_tag_idx][1]
+        predict.append(sentence_predict[::-1])
+    return predict
+
 
 def viterbi_p2(train, test):
     '''
@@ -180,6 +148,89 @@ def viterbi_p2(train, test):
     output: list of sentences with tags on the words
             E.g. [[(word1, tag1), (word2, tag2)...], [(word1, tag1), (word2, tag2)...]...]
     '''
+    num_word = Counter()
+    num_tag = Counter()
+    num_word_tag = Counter()
+    num_tag_tag = Counter()
+    num_init_tag = Counter()
+    scale=Counter()
+    total_sentences = 0
+    total_words = 0
+    for sentence in train:                          #train
+        num_init_tag[sentence[0][1]] += 1
+        total_sentences += 1
+        total_words += len(sentence)
+        for i in range(len(sentence)):
+            word_tag = sentence[i]
+            num_word[word_tag[0]] += 1
+            num_tag[word_tag[1]] += 1
+            num_word_tag[word_tag] += 1
+            if not i==0:
+                prev_word_tag = sentence[i-1]
+                num_tag_tag[(prev_word_tag[1],word_tag[1])] += 1
+
+    kindsofwords = len(num_word)
+    k = 0.00001
+    for each in num_word_tag:
+        if (num_word_tag[each] == 1):
+            scale[each[1]] +=1
+    scale_sum=sum(scale.values())
+    for each in tagset:
+        if each not in scale:
+            scale[each] = 0
+        scale[each] = (scale[each] + k )/ (scale_sum+k*16)
+    
+    # for each in scale:
+        
+    predict = []
+    for sentence in test:                           #inference
+        sentence_predict = []  
+        trellis = []
+        for _ in range(len(sentence)):
+            prob_prev = []         
+            for _ in range(16):
+                prob_prev.append([0.0, -1])         #one of 16 entries in tag_prob_prev 
+                                                    # = (probability, previous_tag_idx)
+            trellis.append(prob_prev)           #3D trellis ==> [N][16][2]
+
+        for word_idx in range(len(sentence)):
+            cur_word = sentence[word_idx]
+            if (word_idx == 0):                 #initial probabilities
+                for tag_idx in range(16):
+                    trellis[word_idx][tag_idx][0] = math.log((num_init_tag[tagarray[tag_idx]] + k)/(total_sentences+k*16))
+                    # p1 = math.log((num_tag[tagarray[tag_idx]] + k)/(total_words+k*(kindsofwords+1)))
+                    # p2 = math.log((num_word_tag[(sentence[word_idx],tagarray[tag_idx])] + k)/(num_tag[tagarray[tag_idx]]+k*(kindsofwords+1)))
+                    # trellis[word_idx][tag_idx][0] = p1 + p2
+            else:
+                for tag_idx in range(16):
+                    prev_idx = -1
+                    max_prob = float("-inf")
+                    for prev_tag_idx in range(16):
+                        prev_prob = trellis[word_idx-1][prev_tag_idx][0]
+                        cur_tag = tagarray[tag_idx]
+                        prev_tag = tagarray[prev_tag_idx]
+                        trans_prob = math.log((num_tag_tag[(prev_tag,cur_tag)]+k)/(num_tag[prev_tag]+k*16))
+                        # print(cur_tag,scale[cur_tag])
+                        emission_prob = math.log((num_word_tag[(cur_word,cur_tag)]+scale[cur_tag]*k)/(num_tag[cur_tag]+scale[cur_tag]*k*(1+kindsofwords)))
+                        cur_prob = prev_prob + trans_prob + emission_prob
+
+                        if cur_prob > max_prob:
+                            prev_idx = prev_tag_idx
+                            max_prob = cur_prob
+                    trellis[word_idx][tag_idx][1] = prev_idx
+                    trellis[word_idx][tag_idx][0] = max_prob
+        #back trace
+        max_prob = float("-inf")
+        max_tag_idx = -1
+        for tag_idx in range(16):
+            if trellis[-1][tag_idx][0] > max_prob:
+                max_prob = trellis[-1][tag_idx][0]
+                max_tag_idx = tag_idx
+        for i in range(len(sentence)-1,-1,-1):
+            sentence_predict.append((sentence[i], tagarray[max_tag_idx]))
+            max_tag_idx = trellis[i][max_tag_idx][1]
+        predict.append(sentence_predict[::-1])
+    return predict
 
 
     predicts = []
