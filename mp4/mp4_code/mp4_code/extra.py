@@ -110,3 +110,5 @@ def extra(train,test):
             max_tag_idx = trellis[i][max_tag_idx][1]
         predict.append(sentence_predict[::-1])
     return predict
+
+
