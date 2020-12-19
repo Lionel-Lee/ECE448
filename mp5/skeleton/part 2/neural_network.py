@@ -34,11 +34,17 @@ def minibatch_gd(epoch, w1, w2, w3, w4, b1, b2, b3, b4, x_train, y_train, num_cl
     for epoch_i in range(epoch):
         print("starting epoch ", epoch_i+1)
         total_L = 0.0
-        tempx = x_train.copy()      #deep copy, no chanfe on the original data
-        tempy = y_train.copy()
         if shuffle:
-            np.random.shuffle(x)
-            np.random.shuffle(y)
+            # tempx = np.random.permutation(x_train)      #deep copy, no change on the original data
+            # tempy = np.random.permutation(y_train)
+
+            shuffle_idx = np.random.choice(N, N, False)
+            tempx = x_train[shuffle_idx]
+            tempy = y_train[shuffle_idx]
+        else:
+            tempx = x_train.copy()      #deep copy, no change on the original data
+            tempy = y_train.copy()
+        
         for i in range(num_batches):
             x_test_batch = tempx[i*n : (i+1)*n]
             y_test_batch = tempy[i*n : (i+1)*n]
@@ -131,7 +137,6 @@ def affine_forward(A, W, b):
     return np.matmul(A,W)+b, (A, W)
 
 def affine_backward(dZ, cache):
-    A, W = cache
     dA = np.matmul(dZ, cache[1].T)
     dW = np.matmul(cache[0].T, dZ)
     db = np.sum(dZ, axis=0)
@@ -145,7 +150,7 @@ def relu_forward(Z):
 def relu_backward(dA, cache):
     Z = cache
     dZ = dA.copy()
-    dZ.[np.where(Z<0)] = 0
+    dZ[np.where(Z<0)] = 0
     return dZ
 
 def cross_entropy(F, y):
